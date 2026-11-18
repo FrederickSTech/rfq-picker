@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>RFQ Picker — Stainless Technologies</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#111827;--mute:#6b7280;--line:#e5e7eb;--line2:#d1d5db;--blue:#2563eb;--red:#bc0000;--hd:#18181b;--chip:#eef2ff}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1012;--card:#18191c;--ink:#e5e7eb;--mute:#9ca3af;--line:#2a2b30;--line2:#34363c;--blue:#60a5fa;--chip:#1e2433}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Arial,Helvetica,sans-serif}
+header{background:var(--hd);color:#fff;border-bottom:4px solid var(--red);padding:14px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:5}
+header svg{flex:none}
+header .k{font-size:11px;letter-spacing:2px;color:#e5e7eb;font-weight:bold}
+header .t{font-size:19px;font-weight:bold}
+header .r{margin-left:auto;text-align:right;font-size:12px;color:#d1d5db}
+main{max-width:860px;margin:0 auto;padding:18px 14px 60px}
+.note{color:var(--mute);font-size:13px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line2);border-left:4px solid var(--blue);border-radius:6px;margin:0 0 18px}
+.ch{display:flex;align-items:baseline;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.ch b{font-size:18px}
+.ch .m{color:var(--mute);font-size:13px}
+.ch .sel{margin-left:auto;font-size:13px}
+.ch .sel a{color:var(--blue);cursor:pointer;text-decoration:none;margin-left:10px}
+table{width:100%;border-collapse:collapse}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tr.off td:not(:first-child){opacity:.45}
+td.cb{width:36px;padding-left:14px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--blue);cursor:pointer;margin:1px 0 0}
+.nm{font-weight:bold}
+.sub{color:var(--mute);font-size:12px;margin-top:2px}
+td.q{width:120px;text-align:right;white-space:nowrap}
+td.q input{width:64px;padding:4px 6px;border:1px solid var(--line2);border-radius:4px;background:transparent;color:var(--ink);font:inherit;text-align:right}
+.atmin{display:inline-block;font-size:11px;color:var(--mute);border:1px solid var(--line2);border-radius:3px;padding:0 5px;margin-left:6px;font-weight:normal}
+.cf{display:flex;gap:10px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);flex-wrap:wrap}
+button{font:bold 14px Arial,Helvetica,sans-serif;border-radius:5px;padding:9px 16px;cursor:pointer;border:1px solid var(--blue)}
+.p{background:var(--blue);color:#fff}
+@media (prefers-color-scheme:dark){.p{color:#0b1220}}
+.s{background:transparent;color:var(--blue)}
+.cf .c{color:var(--mute);font-size:13px;margin-left:auto}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#16a34a;color:#fff;padding:10px 18px;border-radius:6px;font-weight:bold;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.empty{background:var(--card);border:1px solid var(--line2);border-radius:6px;padding:22px;color:var(--mute)}
+footer{color:var(--mute);font-size:12px;margin-top:24px}
+</style>
+</head>
+<body>
+<header>
+  <img src="data:image/png;base64,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" width="36" height="36" alt="Stainless Technologies" style="display:block">
+  <div><div class="k">STAINLESS TECHNOLOGIES</div><div class="t">RFQ Picker</div></div>
+  <div class="r" id="hdate"></div>
+</header>
+<main>
+  <p class="note">Tick the lines you want to send, adjust quantities if needed, then <b>Copy for email</b> (paste into any email as a table) or <b>Open in Outlook</b> (new email with just those lines). Lines at minimum start unticked.</p>
+  <div id="app"></div>
+  <footer>Source: Daily Low-Stock Report &rsaquo; Sortly &rsaquo; CST Parts Inventory. Items already on a JobTread purchase request are left out. Nothing is sent to vendors until you send it.</footer>
+</main>
+<div class="toast" id="toast">Copied</div>
+<script>
+(async function(){
+  const app=document.getElementById('app');
+  function fail(msg){app.innerHTML='<div class="empty">'+msg+'</div>';}
+  const m=location.hash.match(/[#&]d=([A-Za-z0-9_-]+)/);
+  if(!m){fail('No RFQ data in this link. Open the RFQ picker from the Daily Low-Stock Report email.');return;}
+  let data;
+  try{
+    let b=m[1].replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';
+    const bytes=Uint8Array.from(atob(b),c=>c.charCodeAt(0));
+    const txt=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+    data=JSON.parse(txt);
+  }catch(e){fail('This link could not be read. Use the RFQ picker link from the latest Daily Low-Stock Report email.');return;}
+  const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const dt=new Date(data.d+'T12:00:00');
+  const nice=dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  document.getElementById('hdate').innerHTML='From report<br>'+dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+  if(!data.v||!data.v.length){fail('No RFQs in this report &mdash; everything flagged is already on order or needs a vendor.');return;}
+  // item: [name, desc(size material), part, qty, unit, atMin]
+  data.v.forEach((v,vi)=>{
+    const [vendor,items]=v;
+    const card=document.createElement('section');card.className='card';
+    let rows='';
+    items.forEach((it,ii)=>{
+      const [n,d,p,q,u,am]=it;
+      rows+='<tr data-i="'+ii+'"'+(am?' class="off"':'')+'><td class="cb"><input type="checkbox" aria-label="Include '+esc(n)+'"'+(am?'':' checked')+'></td>'+
+        '<td><div class="nm">'+esc(n)+(am?'<span class="atmin">at min</span>':'')+'</div><div class="sub">'+esc([d,p?('Part # '+p):''].filter(Boolean).join(' · '))+'</div></td>'+
+        '<td class="q"><input type="number" min="0" step="any" value="'+(q||1)+'" aria-label="Quantity"> '+esc(u)+'</td></tr>';
+    });
+    card.innerHTML='<div class="ch"><b>'+esc(vendor)+'</b><span class="m">'+items.length+' line'+(items.length>1?'s':'')+'</span><span class="sel">Select <a data-a="all">all</a><a data-a="none">none</a></span></div>'+
+      '<table>'+rows+'</table>'+
+      '<div class="cf"><button class="p" data-a="copy">Copy for email</button><button class="s" data-a="mail">Open in Outlook</button><span class="c"></span></div>';
+    app.appendChild(card);
+    const count=card.querySelector('.c');
+    function picked(){
+      return [...card.querySelectorAll('tr[data-i]')].filter(tr=>tr.querySelector('input[type=checkbox]').checked).map(tr=>{
+        const it=items[+tr.dataset.i];return {n:it[0],d:it[1],p:it[2],q:tr.querySelector('td.q input').value,u:it[4]};});
+    }
+    function upd(){const k=picked().length;count.textContent=k+' of '+items.length+' selected';
+      card.querySelectorAll('tr[data-i]').forEach(tr=>tr.classList.toggle('off',!tr.querySelector('input[type=checkbox]').checked));}
+    card.addEventListener('change',upd);
+    card.addEventListener('click',async e=>{
+      const a=e.target.dataset&&e.target.dataset.a;if(!a)return;
+      if(a==='all'||a==='none'){card.querySelectorAll('input[type=checkbox]').forEach(c=>c.checked=(a==='all'));upd();return;}
+      const L=picked();if(!L.length){toast('Tick at least one line',true);return;}
+      const intro='Hello,\n\nPlease quote the following, with price and lead time:\n\n';
+      const txtLines=L.map((x,i)=>(i+1)+'. '+x.n+(x.d?' '+x.d:'')+(x.p?' | Part # '+x.p:'')+' | Qty '+x.q+' '+x.u).join('\n');
+      const text=intro+txtLines+'\n\nThank you,';
+      if(a==='mail'){
+        location.href='mailto:?subject='+encodeURIComponent('RFQ - Stainless Technologies - '+nice)+'&body='+encodeURIComponent(text);return;}
+      const td='style="padding:6px 10px;border:1px solid #d1d5db;font:14px Arial,Helvetica,sans-serif"';
+      const th='style="padding:6px 10px;border:1px solid #d1d5db;font:bold 13px Arial,Helvetica,sans-serif;text-align:left"';
+      const html='<p style="font:14px Arial,Helvetica,sans-serif">Hello,<br><br>Please quote the following, with price and lead time:</p>'+
+        '<table style="border-collapse:collapse"><tr><th '+th+'>#</th><th '+th+'>Item</th><th '+th+'>Part #</th><th '+th+'>Qty</th></tr>'+
+        L.map((x,i)=>'<tr><td '+td+'>'+(i+1)+'</td><td '+td+'>'+esc(x.n+(x.d?' '+x.d:''))+'</td><td '+td+'>'+esc(x.p||'-')+'</td><td '+td+' align="right">'+esc(x.q+' '+x.u)+'</td></tr>').join('')+
+        '</table><p style="font:14px Arial,Helvetica,sans-serif">Thank you,</p>';
+      try{
+        await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([text],{type:'text/plain'})})]);
+      }catch(err){
+        try{await navigator.clipboard.writeText(text);}catch(e2){
+          const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}
+      }
+      toast('Copied '+L.length+' line'+(L.length>1?'s':'')+' — paste into your email');
+    });
+    upd();
+  });
+  function toast(t,bad){const el=document.getElementById('toast');el.textContent=t;el.style.background=bad?'#b45309':'#16a34a';el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),2200);}
+})();
+</script>
+</body>
+</html>
